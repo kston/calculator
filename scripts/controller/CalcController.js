@@ -1,9 +1,12 @@
 class CalcController {
   constructor() {
+    this._audio = new Audio('click.mp3');
+    this._audioOnOff = false;
     this._locale = 'pt-BR';
 
     this._dateEl = document.querySelector('.date');
     this._timeEl = document.querySelector('.time');
+    this._song = document.getElementById('song');
 
     this._currentDate;
 
@@ -12,10 +15,26 @@ class CalcController {
 
   initialize() {
     this.setDisplayDateTime();
+    this.playsong();
 
     setInterval(() => {
       this.setDisplayDateTime();
     }, 1000);
+  }
+
+  playsong() {
+    this._song.addEventListener('click', () => {
+      this._audioOnOff = !this._audioOnOff;
+
+      this._audioOnOff
+        ? (this._song.className = 'fas fa-volume-up')
+        : (this._song.className = 'fas fa-volume-mute');
+
+      if (this._audioOnOff) {
+        this._audio.currentTime = 0;
+        this._audio.play();
+      }
+    });
   }
 
   setDisplayDateTime() {
