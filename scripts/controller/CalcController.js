@@ -85,14 +85,19 @@ class CalcController {
       case 'CE':
         this.clearEntry();
       case '←':
+        this.clearEntry();
         break;
       case '±':
+        this.specialOperation('±');
         break;
       case '¹/x':
+        this.specialOperation('¹/x');
         break;
       case 'x²':
+        this.specialOperation('x²');
         break;
       case '√':
+        this.specialOperation('√');
         break;
       case '+':
         this.addOperation('+');
@@ -145,6 +150,36 @@ class CalcController {
     } catch (e) {
       setTimeout(() => this.setError(), 1);
     }
+  }
+
+  specialOperation(value) {
+    let lastOperation = this.getLastOperation();
+
+    switch (value) {
+      case '±':
+        lastOperation = lastOperation * -1;
+        this.setEspecialOperationtoDisplay(lastOperation);
+        break;
+      case '¹/x':
+        lastOperation = 1 / lastOperation;
+        this.setEspecialOperationtoDisplay(
+          parseFloat(lastOperation.toFixed(6))
+        );
+
+        break;
+      case 'x²':
+        this.setEspecialOperationtoDisplay(Math.pow(lastOperation, 2));
+        break;
+      case '√':
+        this.setEspecialOperationtoDisplay(
+          parseFloat(Math.sqrt(lastOperation).toFixed(6))
+        );
+        break;
+    }
+  }
+  setEspecialOperationtoDisplay(value) {
+    this.setLastOperation(value);
+    this.setLastNumbertoDisplay();
   }
 
   addDot() {
@@ -296,6 +331,11 @@ class CalcController {
   }
 
   set displayCalc(value) {
-    this._displayCalcEl.innerText = value;
+    if (value.toString().length > 10) {
+      this.setError();
+      return false;
+    }
+
+    this._displayCalcEl.innerHTML = value;
   }
 }
