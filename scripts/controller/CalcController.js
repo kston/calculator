@@ -19,6 +19,29 @@ class CalcController {
 
     this.initialize();
     this.initButtonsEvents();
+    this.initKeyboard();
+  }
+
+  copyToClipboard() {
+    let input = document.createElement('input');
+
+    input.value = this.displayCalc;
+
+    document.body.appendChild(input);
+
+    input.select();
+
+    document.execCommand('Copy');
+
+    input.remove();
+  }
+
+  pasteFromClipboard() {
+    document.addEventListener('paste', (e) => {
+      let text = e.clipboardData.getData('Text');
+
+      this.displayCalc = parseFloat(text);
+    });
   }
 
   initialize() {
@@ -34,8 +57,55 @@ class CalcController {
     });
 
     this.setLastNumbertoDisplay();
+    this.pasteFromClipboard();
   }
 
+  initKeyboard() {
+    document.addEventListener('keyup', (e) => {
+      this.playsong();
+      switch (e.key) {
+        case 'Escape':
+          this.clearAll();
+          break;
+        case 'Backspace':
+          this.clearEntry();
+          break;
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+        case '%':
+          this.addOperation(e.key);
+          break;
+
+        case 'Enter':
+        case '=':
+          this.calc();
+          break;
+
+        case '.':
+        case ',':
+          this.addDot();
+          break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          this.addOperation(parseInt(e.key));
+          break;
+
+        case 'c':
+          if (e.ctrlKey) this.copyToClipboard();
+          break;
+      }
+    });
+  }
   toggleAudio() {
     this._audioOnOff = !this._audioOnOff;
     this._audioOnOff
@@ -85,7 +155,7 @@ class CalcController {
       case 'CE':
         this.clearEntry();
       case '←':
-        this.clearEntry();
+        this.clearLastEntry();
         break;
       case '±':
         this.specialOperation('±');
@@ -136,6 +206,7 @@ class CalcController {
         this.setError();
     }
   }
+
   pushOperation(value) {
     this._operation.push(value);
 
@@ -163,7 +234,7 @@ class CalcController {
       case '¹/x':
         lastOperation = 1 / lastOperation;
         this.setEspecialOperationtoDisplay(
-          parseFloat(lastOperation.toFixed(6))
+          parseFloat(lastOperation.toFixed(8))
         );
 
         break;
@@ -172,7 +243,7 @@ class CalcController {
         break;
       case '√':
         this.setEspecialOperationtoDisplay(
-          parseFloat(Math.sqrt(lastOperation).toFixed(6))
+          parseFloat(Math.sqrt(lastOperation).toFixed(8))
         );
         break;
     }
@@ -296,6 +367,15 @@ class CalcController {
   clearEntry() {
     this._operation.pop();
     this.setLastNumbertoDisplay();
+  }
+
+  clearLastEntry() {
+    let lastNumber = this.getlastItem(false);
+    let NewArray = Array.from(lastNumber);
+    NewArray.pop();
+    lastNumber = NewArray.join('');
+    console.log(NewArray);
+    this.setEspecialOperationtoDisplay(lastNumber);
   }
 
   setError() {
