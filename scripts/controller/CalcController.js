@@ -372,10 +372,14 @@ class CalcController {
   clearLastEntry() {
     let lastNumber = this.getlastItem(false);
     let NewArray = Array.from(lastNumber);
-    NewArray.pop();
-    lastNumber = NewArray.join('');
-    console.log(NewArray);
-    this.setEspecialOperationtoDisplay(lastNumber);
+    if (NewArray.length == 0 || NewArray == null) {
+      alert("there's nothing else to remove");
+    } else {
+      NewArray.pop();
+      lastNumber = NewArray.join('');
+
+      this.setEspecialOperationtoDisplay(lastNumber);
+    }
   }
 
   setError() {
